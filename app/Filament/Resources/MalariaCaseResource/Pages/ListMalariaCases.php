@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\MalariaCaseResource\Pages;
 
-use App\Filament\Resources\MalariaCaseResource;
 use Filament\Actions;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\MalariaCaseResource;
 
 class ListMalariaCases extends ListRecords
 {
@@ -17,5 +18,10 @@ class ListMalariaCases extends ListRecords
         return [
             // Actions\CreateAction::make(),
         ];
+    }
+
+    public function getMaxContentWidth(): MaxWidth
+    {
+        return MaxWidth::Full;
     }
 }

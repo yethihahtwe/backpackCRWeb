@@ -2,10 +2,14 @@
 
 namespace App\Services;
 
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\Layout\Split;
+use Filament\Tables\Columns\Layout\Stack;
+use Illuminate\Contracts\Support\Htmlable;
 
 class TableComponents
 {
@@ -13,14 +17,14 @@ class TableComponents
     {
         return [
             TextColumn::make('test_date')
-                ->formatStateUsing(fn ($state) => Carbon::createFromFormat('d-m-Y', $state)->format('d-F-Y'))
-                ->label('RDT Test Date')
+                // ->formatStateUsing(fn ($state) => Carbon::createFromFormat('d-m-Y', $state)->format('d-F-Y'))
+                ->label('Test Date')
                 ->size(TextColumn\TextColumnSize::ExtraSmall)
                 ->color(fn ($record) => CustomFunctions::getTableCellColor($record)),
             TextColumn::make('name')->formatStateUsing(fn ($state) => Str::title($state))
                 ->size(TextColumn\TextColumnSize::ExtraSmall)
                 ->color(fn ($record) => CustomFunctions::getTableCellColor($record)),
-            TextColumn::make('age')->label('Age(yrs)')->alignEnd()
+            TextColumn::make('age')->alignEnd()
                 ->size(TextColumn\TextColumnSize::ExtraSmall)
                 ->color(fn ($record) => CustomFunctions::getTableCellColor($record)),
             TextColumn::make('sex')->badge()->formatStateUsing(fn ($state) => match ($state) {
@@ -33,6 +37,8 @@ class TableComponents
                 ->icon(function ($record, $state) {
                     if ($record->sex === 'Female' && $state === 'true') {
                         return AppIcons::TICK_ICON;
+                    } else if ($record->sex === 'Female' && $state === 'false') {
+                        return AppIcons::CROSS_ICON;
                     }
                     return null;
                 })
@@ -40,15 +46,15 @@ class TableComponents
             TextColumn::make('address')->wrap()->formatStateUsing(fn ($state) => Str::title($state))
                 ->size(TextColumn\TextColumnSize::ExtraSmall)
                 ->color(fn ($record) => CustomFunctions::getTableCellColor($record)),
-            TextColumn::make('rdt_bool')->label('RDT')->badge()
-                ->formatStateUsing(fn ($state) => match ($state) {
-                    'Positive' => 'Pos',
-                    'Negative' => 'Neg',
+            IconColumn::make('rdt_bool')->label('RDT')
+                ->icon(fn ($state) => match ($state) {
+                    'Positive' => AppIcons::POSITIVE_ICON,
+                    'Negative' => AppIcons::NEGATIVE_ICON,
                 })
                 ->color(fn ($state) => match ($state) {
                     'Positive' => 'danger',
                     'Negative' => 'success',
-                })->size(TextColumn\TextColumnSize::ExtraSmall),
+                }),
             TextColumn::make('rdt_pos_result')
                 ->label('MP')
                 ->badge()
@@ -58,60 +64,80 @@ class TableComponents
                 ->label('Symptoms')
                 ->size(TextColumn\TextColumnSize::ExtraSmall)
                 ->color(fn ($record) => CustomFunctions::getTableCellColor($record)),
-            IconColumn::make('act24')
-                ->icon(fn ($state) => $state === 'true' ? AppIcons::TICK_ICON : null)
-                ->color('success'),
             TextColumn::make('act24_amount')
+            ->label('ACT24')
+            ->icon(AppIcons::TICK_ICON)
                 ->size(TextColumn\TextColumnSize::ExtraSmall)
-                ->color('success'),
-            IconColumn::make('act18')
-                ->icon(fn ($state) => $state === 'true' ? AppIcons::TICK_ICON : null)
                 ->color('success'),
             TextColumn::make('act18_amount')
+            ->label('ACT18')
+            ->icon(AppIcons::TICK_ICON)
                 ->size(TextColumn\TextColumnSize::ExtraSmall)
-                ->color('success'),
-            IconColumn::make('act12')
-                ->icon(fn ($state) => $state === 'true' ? AppIcons::TICK_ICON : null)
                 ->color('success'),
             TextColumn::make('act12_amount')
+            ->label('ACT12')
+            ->icon(AppIcons::TICK_ICON)
                 ->size(TextColumn\TextColumnSize::ExtraSmall)
-                ->color('success'),
-            IconColumn::make('act6')
-                ->icon(fn ($state) => $state === 'true' ? AppIcons::TICK_ICON : null)
                 ->color('success'),
             TextColumn::make('act6_amount')
+            ->label('ACT6')
+            ->icon(AppIcons::TICK_ICON)
                 ->size(TextColumn\TextColumnSize::ExtraSmall)
-                ->color('success'),
-            IconColumn::make('chloroquine')
-                ->label('CQ')
-                ->icon(fn ($state) => $state === 'true' ? AppIcons::TICK_ICON : null)
                 ->color('success'),
             TextColumn::make('chloroquine_amount')
-                ->label('CQ Amount')
+                ->label('CQ')
+                ->icon(AppIcons::TICK_ICON)
                 ->size(TextColumn\TextColumnSize::ExtraSmall)
-                ->color('success'),
-            IconColumn::make('primaquine')
-                ->label('PQ')
-                ->icon(fn ($state) => $state === 'true' ? AppIcons::TICK_ICON : null)
                 ->color('success'),
             TextColumn::make('primaquine_amount')
+            ->label('PQ')
+            ->icon(AppIcons::TICK_ICON)
                 ->size(TextColumn\TextColumnSize::ExtraSmall)
                 ->color('success'),
-            TextColumn::make('refer'),
-            TextColumn::make('death'),
-            TextColumn::make('receive_rx'),
-            TextColumn::make('travel'),
-            TextColumn::make('job'),
-            TextColumn::make('other_job'),
-            TextColumn::make('remark'),
-            TextColumn::make('vol_name'),
-            TextColumn::make('state'),
-            TextColumn::make('tsp_mimu'),
-            TextColumn::make('tsp_eho'),
-            TextColumn::make('area'),
-            TextColumn::make('vil'),
-            TextColumn::make('usr_name'),
-            TextColumn::make('usr_id'),
+            IconColumn::make('refer')
+            ->icon(fn($state) => $state === 'true'? AppIcons::TICK_ICON : null)
+            ->color('warning'),
+            IconColumn::make('death')
+            ->icon(fn($state) => $state === 'true'? AppIcons::TICK_ICON : null)
+            ->color('danger'),
+
+            TextColumn::make('receive_rx')
+            ->label('Rx')
+            ->formatStateUsing(fn($state) => match ($state) {
+                'Within-24hr' => 'w/t:24h',
+                'After-24hr' => 'a/f:24h',
+            })
+            ->color(fn ($record) => CustomFunctions::getTableCellColor($record))
+            ->size(TextColumn\TextColumnSize::ExtraSmall),
+            IconColumn::make('travel')
+            ->icon(fn($state) => $state === 'true'? AppIcons::TICK_ICON : null)
+            ->color(fn($record) => CustomFunctions::getTableCellColor($record)),
+            TextColumn::make('job')
+            ->size(TextColumn\TextColumnSize::ExtraSmall)
+            ->color(fn ($record) => CustomFunctions::getTableCellColor($record))
+            ->description(fn($record) => $record->other_job ?? null),
+            TextColumn::make('remark')
+            ->wrap()
+            ->size(TextColumn\TextColumnSize::ExtraSmall)
+            ->color(fn ($record) => CustomFunctions::getTableCellColor($record)),
+            TextColumn::make('vol_name')
+            ->label(new HtmlString('Volunteer<br />Name'))
+            ->size(TextColumn\TextColumnSize::ExtraSmall)
+            ->color(fn ($record) => CustomFunctions::getTableCellColor($record)),
+            TextColumn::make('state')
+            ->label('Township')
+            ->formatStateUsing(fn($record) => new HtmlString($record->tsp_mimu . '/' . $record->tsp_eho . '<br />' . $record->state))
+            ->size(TextColumn\TextColumnSize::ExtraSmall)
+            ->color(fn ($record) => CustomFunctions::getTableCellColor($record)),
+            TextColumn::make('vil')
+            ->label(new HtmlString('Village/' . '<br />Area'))
+            ->formatStateUsing(fn($record) => new HtmlString($record->vil . '<br />' . $record->area))
+            ->size(TextColumn\TextColumnSize::ExtraSmall)
+            ->color(fn ($record) => CustomFunctions::getTableCellColor($record)),
+            // TextColumn::make('usr_name')
+            // ->label('Username')
+            // ->size(TextColumn\TextColumnSize::ExtraSmall)
+            // ->color(fn ($record) => CustomFunctions::getTableCellColor($record)),
 
         ];
     }
