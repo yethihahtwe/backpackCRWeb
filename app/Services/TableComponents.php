@@ -113,15 +113,16 @@ class TableComponents
             ->icon(fn($state) => $state === 'true'? AppIcons::TICK_ICON : null)
             ->color(fn($record) => CustomFunctions::getTableCellColor($record)),
             TextColumn::make('job')
+            ->formatStateUsing(fn($state, $record) => new HtmlString($state . '<br /><i>'. $record->other_job ?? '' . '</i>'))
             ->size(TextColumn\TextColumnSize::ExtraSmall)
-            ->color(fn ($record) => CustomFunctions::getTableCellColor($record))
-            ->description(fn($record) => $record->other_job ?? null),
+            ->color(fn ($record) => CustomFunctions::getTableCellColor($record)),
             TextColumn::make('remark')
             ->wrap()
             ->size(TextColumn\TextColumnSize::ExtraSmall)
             ->color(fn ($record) => CustomFunctions::getTableCellColor($record)),
             TextColumn::make('vol_name')
             ->label(new HtmlString('Volunteer<br />Name'))
+            ->formatStateUsing(fn($state) => Str::title($state))
             ->size(TextColumn\TextColumnSize::ExtraSmall)
             ->color(fn ($record) => CustomFunctions::getTableCellColor($record)),
             TextColumn::make('state')
@@ -142,41 +143,3 @@ class TableComponents
         ];
     }
 }
-// 'rx_month',
-//         '',
-//         'test_date',
-//         'name',
-//         'age',
-//         'address',
-//         'sex',
-//         'pregnancy',
-//         'rdt_bool',
-//         'rdt_pos_result',
-//         'symptom',
-//         'act24',
-//         'act24_amount',
-//         'act18',
-//         'act18_amount',
-//         'act12',
-//         'act12_amount',
-//         'act6',
-//         'act6_amount',
-//         'chloroquine',
-//         'chloroquine_amount',
-//         'primaquine',
-//         'primaquine_amount',
-//         'refer',
-//         'death',
-//         'receive_rx',
-//         'travel',
-//         'job',
-//         'other_job',
-//         'remark',
-//         'vol_name',
-//         'state',
-//         'tsp_mimu',
-//         'tsp_eho',
-//         'area',
-//         'vil',
-//         'usr_name',
-//         'usr_id',
