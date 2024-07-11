@@ -17,4 +17,5 @@ class AppIcons
     public const CALENDAR_ICON = 'heroicon-o-calendar';
 
     public const DOWNLOAD_ICON = 'heroicon-o-arrow-down-tray';
+    public const PATIENT_ICON = 'heroicon-o-user';
 }

@@ -30,6 +30,9 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Blue,
             ])
+            ->brandLogo(asset('images/logo.jpg'))
+            ->brandLogoHeight('3rem')
+            ->favicon(asset('images/favicon.ico'))
             ->topNavigation()
             ->databaseNotifications()
             ->databaseNotificationsPolling('30')

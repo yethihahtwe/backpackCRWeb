@@ -10,6 +10,8 @@ class EditMalariaCase extends EditRecord
 {
     protected static string $resource = MalariaCaseResource::class;
 
+    protected static ?string $title = 'Edit Malaria Case Report';
+
     protected function getHeaderActions(): array
     {
         return [

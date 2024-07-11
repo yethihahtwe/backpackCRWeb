@@ -20,6 +20,7 @@ use Filament\Actions\Exports\Enums\ExportFormat;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MalariaCaseResource\Pages;
 use App\Filament\Resources\MalariaCaseResource\RelationManagers;
+use App\Services\PageSpecificFormComponents;
 
 class MalariaCaseResource extends Resource
 {
@@ -32,9 +33,7 @@ class MalariaCaseResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                //
-            ]);
+            ->schema(PageSpecificFormComponents::malariaCaseForm());
     }
 
     public static function table(Table $table): Table
